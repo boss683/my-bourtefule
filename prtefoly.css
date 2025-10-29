@@ -81,14 +81,16 @@ nav {
 
 .mobile-menu {
     display: none;
-    flex-direction: column;
+   font-size: 30px;
+   color: white;
+   user-select: none;
     cursor: pointer;
 }
 
 .mobile-menu span {
     width: 25px;
     height: 3px;
-    background: var(--text-dark);
+    /* background: var(--text-dark); */
     margin: 3px 0;
     transition: 0.3s;
 }
