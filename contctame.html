@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Hussein</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+            --success: #2ecc71;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Cloud Animation Background */
+        .cloud-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+        }
+
+        .cloud:nth-child(1) {
+            width: 300px;
+            height: 100px;
+            top: 10%;
+            left: -100px;
+            animation: floatCloud 25s linear infinite;
+        }
+
+        .cloud:nth-child(2) {
+            width: 200px;
+            height: 70px;
+            top: 30%;
+            right: -100px;
+            animation: floatCloud 20s linear infinite 5s;
+        }
+
+        .cloud:nth-child(3) {
+            width: 250px;
+            height: 80px;
+            bottom: 20%;
+            left: -100px;
+            animation: floatCloud 30s linear infinite 10s;
+        }
+
+        .cloud:nth-child(4) {
+            width: 180px;
+            height: 60px;
+            bottom: 40%;
+            right: -100px;
+            animation: floatCloud 22s linear infinite 15s;
+        }
+
+        @keyframes floatCloud {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+            25% {
+                transform: translateX(100px) translateY(-20px);
+            }
+            50% {
+                transform: translateX(200px) translateY(0);
+            }
+            75% {
+                transform: translateX(300px) translateY(20px);
+            }
+            100% {
+                transform: translateX(400px) translateY(0);
+            }
+        }
+
+        /* Rain Animation */
+        .rain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3));
+            animation: rainFall linear infinite;
+        }
+
+        @keyframes rainFall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        /* Sun/Moon Animation */
+        .sun-moon {
+            position: fixed;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #ff8c00);
+            box-shadow: 0 0 60px #ffd700, 0 0 100px #ff8c00;
+            top: 10%;
+            right: 10%;
+            z-index: -1;
+            animation: sunMovement 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes sunMovement {
+            0% {
+                transform: translateX(0) translateY(0);
+                box-shadow: 0 0 60px #ffd700, 0 0 100px #ff8c00;
+            }
+            50% {
+                transform: translateX(-50px) translateY(50px);
+                box-shadow: 0 0 80px #ffd700, 0 0 120px #ff8c00;
+            }
+            100% {
+                transform: translateX(-100px) translateY(0);
+                background: radial-gradient(circle at 30% 30%, #f0f0f0, #888);
+                box-shadow: 0 0 40px #f0f0f0, 0 0 80px #888;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Navigation */
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo a {
+            font-size: 28px;
+            font-weight: 800;
+            text-decoration: none;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo span {
+            color: #ffd700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            padding: 10px 15px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-login {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #2c3e50;
+            width: 100px;
+            padding: 5px 20px;
+            border-radius: 60px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(45deg, #ff8c00, #ffd700);
+        }
+
+        .mobile-menu {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+        }
+
+        /* Contact Container Styles */
+        .contact-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 100px;
+            padding-bottom: 50px;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .contact-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .contact-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+            resize: vertical;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .contact-btn {
+            background: linear-gradient(45deg, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+        }
+
+        .contact-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .contact-footer p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .contact-footer a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .contact-footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .back-home:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            color: #ffd700;
+        }
+
+        /* Contact Info */
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 15px;
+            padding: 25px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+            min-width: 180px;
+        }
+
+        .contact-item:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ffd700;
+        }
+
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #3498db, #2c3e50);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .contact-item h3 {
+            color: white;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .contact-item p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 20px;
+                border-radius: 0 0 20px 20px;
+                z-index: 1000;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .contact-container {
+                padding-top: 150px;
+            }
+
+            .contact-card {
+                margin: 20px;
+            }
+
+            .contact-info {
+                gap: 20px;
+            }
+
+            .contact-item {
+                min-width: 150px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .contact-card {
+                padding: 30px;
+                margin: 15px;
+            }
+
+            .contact-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .contact-item {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .contact-card {
+                padding: 25px;
+            }
+
+            .contact-btn {
+                padding: 14px;
+            }
+
+            .contact-header h2 {
+                font-size: 1.6rem;
+            }
+
+            .contact-item {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Weather Animations -->
+    <div class="cloud-container">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
+
+    <div class="rain-container" id="rainContainer"></div>
+
+    <div class="sun-moon"></div>
+
+    <div class="container">
+        <!-- Navigation -->
+        <header>
+            <nav>
+                <div class="logo">
+                    <a href="./index.html"><span>HU</span>SSEIN</a>
+                </div>
+                <div class="nav-links">
+                    <a href="./index.html#home">Home</a>
+                    <a href="./index.html#aboutme">About</a>
+                    <a href="./index.html#project">Projects</a>
+                    <a href="./index.html#services">Services</a>
+                    <a href="./index.html#skills">Skills</a>
+                    <a href="./index.html#contact">Contact</a>
+                    <a href="Login Page.html" class="btn-login" target="_blank">Login</a>
+                </div>
+                <div class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </header>
+        
+        <div class="contact-container">
+            <div class="contact-card">
+                <div class="contact-header">
+                    <h2>Contact Me</h2>
+                    <p>Feel free to reach out for any inquiries or collaborations</p>
+                </div>
+
+                <form class="contact-form" action="https://formsubmit.co/adamhusseinhussein27@gmail.com" method="POST">
+                    <input type="hidden" name="_subject" value="New Contact Form Submission">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_template" value="table">
+                    
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" placeholder="What is this regarding?" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Enter your message here..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="contact-btn">Send Message</button>
+                </form>
+
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email</h3>
+                        <p>adamhusseinhussein27@gmail.com</p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h3>Phone</h3>
+                        <p>+250 735 668 997 </p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3>Location</h3>
+                        <p>Khartoum, Sudan</p>
+                    </div>
+                </div>
+
+                <div class="contact-footer">
+                    <p>Want to see my work? <a href="./index.html">View Portfolio</a></p>
+                    <p>Need to login? <a href="Login Page.html">Login Here</a></p>
+                    <a href="./index.html" class="back-home">← Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create rain animation
+        function createRain() {
+            const rainContainer = document.getElementById('rainContainer');
+            for (let i = 0; i < 100; i++) {
+                const raindrop = document.createElement('div');
+                raindrop.classList.add('raindrop');
+                
+                // Random properties
+                const left = Math.random() * 100;
+                const duration = 1 + Math.random() * 2;
+                const delay = Math.random() * 5;
+                const size = 10 + Math.random() * 20;
+                
+                raindrop.style.left = `${left}%`;
+                raindrop.style.animationDuration = `${duration}s`;
+                raindrop.style.animationDelay = `${delay}s`;
+                raindrop.style.height = `${size}px`;
+                
+                rainContainer.appendChild(raindrop);
+            }
+        }
+
+        // Mobile Menu Toggle
+        document.querySelector('.mobile-menu').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+            this.querySelector('i').classList.toggle('fa-bars');
+            this.querySelector('i').classList.toggle('fa-times');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelector('.nav-links').classList.remove('active');
+                const menuIcon = document.querySelector('.mobile-menu i');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            });
+        });
+
+        // Form submission handling
+        document.querySelector('.contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Here you would typically send the data to a server
+            // For now, we'll show a success message
+            alert('Message sent successfully! Thank you for contacting me.');
+            
+            // Reset form
+            this.reset();
+        });
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(0, 0, 0, 0.3)';
+                header.style.backdropFilter = 'blur(20px)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.1)';
+                header.style.backdropFilter = 'blur(10px)';
+            }
+        });
+
+        // Add parallax effect to clouds
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const clouds = document.querySelectorAll('.cloud');
+            
+            clouds.forEach((cloud, index) => {
+                const speed = 0.5 + (index * 0.1);
+                const yPos = -(scrolled * speed);
+                cloud.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+
+        // Initialize the rain animation
+        createRain();
+    </script>
+</body>
+
+</html>

@@ -1,50 +1,1427 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="Contact Page.css">
-    <title>Login - Hussein</title>
+    <title> login page.html</title>
+    <!-- <title>Login - Hussein</title> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK for Login page (updated project + analytics) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        // New Firebase project config (from user)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBH82saAnFdngU2M6JsWekG4xMl-Q30Ses",
+            authDomain: "my-job-spcfec.firebaseapp.com",
+            databaseURL: "https://my-job-spcfec-default-rtdb.firebaseio.com",
+            projectId: "my-job-spcfec",
+            storageBucket: "my-job-spcfec.firebasestorage.app",
+            messagingSenderId: "863927288275",
+            appId: "1:863927288275:web:2a62cb3333c63eff8aef26",
+            measurementId: "G-5QCBRWW8N4"
+        };
+
+        // Initialize Firebase services
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Expose helpers globally so existing page scripts continue to work
+        window.firebaseApp = app;
+        window.firebaseAnalytics = analytics;
+        window.firebaseAuth = auth;
+        window.firebaseDatabase = database;
+        window.firebaseSignIn = signInWithEmailAndPassword;
+        window.firebaseOnAuthStateChanged = onAuthStateChanged;
+        window.firebaseSignOut = signOut;
+        window.firebaseSendPasswordResetEmail = sendPasswordResetEmail;
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebaseGet = get;
+        window.firebaseUpdate = update;
+
+        console.log('Firebase initialized on Login Page (project: ' + firebaseConfig.projectId + ')');
+    </script>
+    <script>
+        // Simple runtime diagnostics (non-module)
+        window.addEventListener('load', () => {
+            console.log('Diagnostics: firebaseAuth present?', !!window.firebaseAuth);
+            console.log('Diagnostics: firebaseSignIn present?', !!window.firebaseSignIn);
+            if (window.firebaseAuth && window.firebaseAuth.app) {
+                try { console.log('Firebase app name:', window.firebaseAuth.app.name); } catch (e) { }
+            }
+        });
+    </script>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+            --success: #2ecc71;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Firebase inline message styles */
+        .firebase-message {
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .firebase-message.error {
+            background: rgba(231, 76, 60, 0.12);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #fff;
+        }
+
+        .firebase-message.success {
+            background: rgba(46, 204, 113, 0.12);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #fff;
+        }
+
+        /* Cloud Animation Background */
+        .cloud-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+        }
+
+        .cloud:nth-child(1) {
+            width: 300px;
+            height: 100px;
+            top: 10%;
+            left: -100px;
+            animation: floatCloud 25s linear infinite;
+        }
+
+        .cloud:nth-child(2) {
+            width: 200px;
+            height: 70px;
+            top: 30%;
+            right: -100px;
+            animation: floatCloud 20s linear infinite 5s;
+        }
+
+        .cloud:nth-child(3) {
+            width: 250px;
+            height: 80px;
+            bottom: 20%;
+            left: -100px;
+            animation: floatCloud 30s linear infinite 10s;
+        }
+
+        .cloud:nth-child(4) {
+            width: 180px;
+            height: 60px;
+            bottom: 40%;
+            right: -100px;
+            animation: floatCloud 22s linear infinite 15s;
+        }
+
+        @keyframes floatCloud {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+
+            25% {
+                transform: translateX(100px) translateY(-20px);
+            }
+
+            50% {
+                transform: translateX(200px) translateY(0);
+            }
+
+            75% {
+                transform: translateX(300px) translateY(20px);
+            }
+
+            100% {
+                transform: translateX(400px) translateY(0);
+            }
+        }
+
+        /* Rain Animation */
+        .rain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3));
+            animation: rainFall linear infinite;
+        }
+
+        @keyframes rainFall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        /* Sun/Moon Animation */
+        .sun-moon {
+            position: fixed;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #ff8c00);
+            box-shadow: 0 0 60px #ffd700, 0 0 100px #ff8c00;
+            top: 10%;
+            right: 10%;
+            z-index: -1;
+            animation: sunMovement 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes sunMovement {
+            0% {
+                transform: translateX(0) translateY(0);
+                box-shadow: 0 0 60px #ffd700, 0 0 100px #ff8c00;
+            }
+
+            50% {
+                transform: translateX(-50px) translateY(50px);
+                box-shadow: 0 0 80px #ffd700, 0 0 120px #ff8c00;
+            }
+
+            100% {
+                transform: translateX(-100px) translateY(0);
+                background: radial-gradient(circle at 30% 30%, #f0f0f0, #888);
+                box-shadow: 0 0 40px #f0f0f0, 0 0 80px #888;
+            }
+        }
+
+        /* Snow Animation */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .snowflake {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: snowFall linear infinite;
+        }
+
+        @keyframes snowFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.8;
+            }
+
+            90% {
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Lightning Animation */
+        .lightning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .lightning-flash {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            animation: lightningFlash 0.2s ease-out;
+        }
+
+        @keyframes lightningFlash {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Fog Animation */
+        .fog-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .fog {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 50%;
+            animation: fogFloat linear infinite;
+        }
+
+        @keyframes fogFloat {
+            0% {
+                transform: translateX(-100%) translateY(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.5;
+            }
+
+            90% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateX(100%) translateY(0);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ================================ */
+        /* NAVIGATION BAR */
+        /* ================================ */
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 35px 0;
+            max-width: 1200px;
+            max-height: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .logo {
+            position: absolute;
+            left: 0;
+        }
+
+        .logo a {
+            font-size: 28px;
+            font-weight: 800;
+            text-decoration: none;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .logo span {
+            color: #ffd700;
+        }
+
+        .nav-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-links a:hover::before {
+            left: 100%;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-right {
+            position: absolute;
+            right: 0;
+        }
+
+        .btn-login {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #2c3e50;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(45deg, #ff8c00, #ffd700);
+        }
+
+        .mobile-menu {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Login Container Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 100px;
+            padding-bottom: 50px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input {
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+            width: 100%;
+            padding-right: 45px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Password Toggle Icon */
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+            transition: color 0.3s;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            color: #ffd700;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            width: 18px;
+            height: 18px;
+            accent-color: #ffd700;
+        }
+
+        .forgot-password {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            background: linear-gradient(45deg, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-footer p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .login-footer a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .login-footer a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-top: 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .back-home:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            color: #ffd700;
+        }
+
+        /* Weather Control */
+        .weather-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .weather-control h3 {
+            margin-bottom: 10px;
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .weather-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .weather-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .weather-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .weather-btn.active {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* ================================ */
+        /* RESPONSIVE DESIGN */
+        /* ================================ */
+        @media (max-width: 992px) {
+            .nav-center {
+                display: none;
+            }
+
+            .nav-right {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: all 0.3s ease;
+                z-index: 999;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                border-radius: 0 0 20px 20px;
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .nav-links a {
+                text-align: center;
+                padding: 15px;
+                font-size: 18px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .login-container {
+                padding-top: 120px;
+            }
+
+            .login-card {
+                margin: 20px;
+            }
+
+            .weather-control {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px;
+            }
+
+            .weather-buttons {
+                gap: 5px;
+            }
+
+            .weather-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 30px;
+                margin: 15px;
+            }
+
+            .login-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .nav-links {
+                gap: 10px;
+            }
+
+            .password-toggle {
+                top: 40px;
+                right: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo a {
+                font-size: 24px;
+            }
+
+            .login-card {
+                padding: 25px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .login-btn {
+                padding: 14px;
+            }
+
+            .login-header h2 {
+                font-size: 1.6rem;
+            }
+
+            .password-toggle {
+                top: 38px;
+                right: 10px;
+                font-size: 16px;
+            }
+
+            .weather-control {
+                bottom: 5px;
+                right: 5px;
+                left: 5px;
+                padding: 8px;
+            }
+
+            .weather-buttons {
+                justify-content: center;
+            }
+
+            .weather-btn {
+                flex: 1;
+                min-width: 70px;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <h2>Welcome Back</h2>
-                <p>Please login to your account</p>
-            </div>
+    <!-- Weather Animations -->
+    <div class="cloud-container">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+    </div>
 
-            <form class="login-form" action="https://formsubmit.co/adamhusseinhussein27@gmail.com"method="">
-                <div class="form-group">
-                    <label for="fullname">Full Name</label>
-                    <input type="text" id="fullname" placeholder="Enter your full name" required>
-                </div>
+    <div class="rain-container" id="rainContainer"></div>
+    <div class="snow-container" id="snowContainer"></div>
+    <div class="fog-container" id="fogContainer"></div>
+    <div class="lightning" id="lightning"></div>
 
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter your valid email" required>
-                </div>
+    <div class="sun-moon"></div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
-                </div>
-
-                <div class="form-options">
-                    <label class="remember-me">
-                        <input type="checkbox"> Remember me
-                    </label>
-                    <a href="#" class="forgot-password">Forgot password?</a>
-                </div>
-
-                <button type="submit" class="login-btn">Login</button>
-
-                <div class="login-footer">
-                    <p>Don't have an account? <a href="signin.html">Sign up here</a></p>
-                    <a href="./index.html" class="back-home">← Back to Home</a>
-                </div>
-            </form>
+    <!-- Weather Control Panel -->
+    <div class="weather-control">
+        <h3>Weather Effects</h3>
+        <div class="weather-buttons">
+            <button class="weather-btn active" data-weather="rain">
+                <i class="fas fa-cloud-rain"></i> Rain
+            </button>
+            <button class="weather-btn" data-weather="snow">
+                <i class="fas fa-snowflake"></i> Snow
+            </button>
+            <button class="weather-btn" data-weather="fog">
+                <i class="fas fa-smog"></i> Fog
+            </button>
+            <button class="weather-btn" data-weather="storm">
+                <i class="fas fa-bolt"></i> Storm
+            </button>
+            <button class="weather-btn" data-weather="clear">
+                <i class="fas fa-sun"></i> Clear
+            </button>
         </div>
     </div>
+
+    <div class="container">
+        <!-- Navigation -->
+        <header>
+            <nav>
+                <div class="logo">
+                    <a href="./index.html"><span>HU</span>SSEIN</a>
+                </div>
+
+                <div class="nav-center">
+                    <div class="nav-links">
+                        <a href="./#home">Home</a>
+                        <a href="./#aboutme">About</a>
+                        <a href="./#project">Projects</a>
+                        <a href="./#services">Services</a>
+                        <a href="./#skills">Skills</a>
+                        <a href="./#contact">Contact</a>
+                    </div>
+                </div>
+
+                <div class="nav-right">
+                    <a href="Login Page.html" class="btn-login">Login</a>
+                </div>
+
+                <div class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </header>
+
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h2>Welcome Back</h2>
+                    <p>Please login to your account</p>
+                </div>
+
+                <form class="login-form" id="loginForm">
+
+                    <div class="form-group">
+                        <label for="fullname">Full Name</label>
+                        <input type="text" id="fullname" name="name" placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your valid email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" id="passwordToggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember"> Remember me
+                        </label>
+                        <a href="#" class="forgot-password" id="forgotPassword">Forgot password?</a>
+                    </div>
+
+                    <!-- Firebase message box -->
+                    <div id="firebaseMessage" class="firebase-message" style="display:none; margin-bottom:12px;"></div>
+
+                    <button type="submit" class="login-btn" id="loginButton">Login</button>
+
+                    <div class="login-footer">
+                        <!-- <p>Don't have an account? <a href="Sign In Page.html">Sign up here</a></p> -->
+                        <p>Returning user? <a href="Login Page.html">Login here</a></p>
+                        <a href="./index.html" class="back-home">← Back to Home</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Weather Effects System
+        class WeatherSystem {
+            constructor() {
+                this.currentWeather = 'rain';
+                this.containers = {
+                    rain: document.getElementById('rainContainer'),
+                    snow: document.getElementById('snowContainer'),
+                    fog: document.getElementById('fogContainer'),
+                    lightning: document.getElementById('lightning')
+                };
+                this.init();
+            }
+
+            init() {
+                this.createRain();
+                this.createSnow();
+                this.createFog();
+                this.setupWeatherControls();
+            }
+
+            createRain() {
+                const container = this.containers.rain;
+                for (let i = 0; i < 100; i++) {
+                    const raindrop = document.createElement('div');
+                    raindrop.classList.add('raindrop');
+
+                    const left = Math.random() * 100;
+                    const duration = 1 + Math.random() * 2;
+                    const delay = Math.random() * 5;
+                    const size = 10 + Math.random() * 20;
+
+                    raindrop.style.left = `${left}%`;
+                    raindrop.style.animationDuration = `${duration}s`;
+                    raindrop.style.animationDelay = `${delay}s`;
+                    raindrop.style.height = `${size}px`;
+
+                    container.appendChild(raindrop);
+                }
+            }
+
+            createSnow() {
+                const container = this.containers.snow;
+                for (let i = 0; i < 50; i++) {
+                    const snowflake = document.createElement('div');
+                    snowflake.classList.add('snowflake');
+
+                    const left = Math.random() * 100;
+                    const duration = 3 + Math.random() * 5;
+                    const delay = Math.random() * 5;
+                    const size = 3 + Math.random() * 6;
+
+                    snowflake.style.left = `${left}%`;
+                    snowflake.style.animationDuration = `${duration}s`;
+                    snowflake.style.animationDelay = `${delay}s`;
+                    snowflake.style.width = `${size}px`;
+                    snowflake.style.height = `${size}px`;
+
+                    container.appendChild(snowflake);
+                }
+            }
+
+            createFog() {
+                const container = this.containers.fog;
+                for (let i = 0; i < 20; i++) {
+                    const fog = document.createElement('div');
+                    fog.classList.add('fog');
+
+                    const top = Math.random() * 100;
+                    const duration = 20 + Math.random() * 30;
+                    const delay = Math.random() * 20;
+                    const width = 100 + Math.random() * 200;
+                    const height = 20 + Math.random() * 40;
+                    const opacity = 0.1 + Math.random() * 0.2;
+
+                    fog.style.top = `${top}%`;
+                    fog.style.animationDuration = `${duration}s`;
+                    fog.style.animationDelay = `${delay}s`;
+                    fog.style.width = `${width}px`;
+                    fog.style.height = `${height}px`;
+                    fog.style.opacity = opacity;
+
+                    container.appendChild(fog);
+                }
+            }
+
+            createLightning() {
+                const container = this.containers.lightning;
+                const flash = document.createElement('div');
+                flash.classList.add('lightning-flash');
+                container.appendChild(flash);
+
+                setTimeout(() => {
+                    if (flash.parentNode === container) {
+                        container.removeChild(flash);
+                    }
+                }, 200);
+            }
+
+            changeWeather(weatherType) {
+                this.currentWeather = weatherType;
+
+                // Hide all weather effects
+                Object.values(this.containers).forEach(container => {
+                    container.style.display = 'none';
+                });
+
+                // Show selected weather
+                switch (weatherType) {
+                    case 'rain':
+                        this.containers.rain.style.display = 'block';
+                        break;
+                    case 'snow':
+                        this.containers.snow.style.display = 'block';
+                        break;
+                    case 'fog':
+                        this.containers.fog.style.display = 'block';
+                        break;
+                    case 'storm':
+                        this.containers.rain.style.display = 'block';
+                        // Start lightning storm
+                        this.startLightningStorm();
+                        break;
+                    case 'clear':
+                        // Show nothing (clear weather)
+                        break;
+                }
+
+                // Update button states
+                this.updateWeatherButtons(weatherType);
+            }
+
+            startLightningStorm() {
+                // Create lightning at random intervals
+                const createRandomLightning = () => {
+                    if (this.currentWeather === 'storm') {
+                        this.createLightning();
+                        const nextLightning = 2000 + Math.random() * 8000;
+                        setTimeout(createRandomLightning, nextLightning);
+                    }
+                };
+
+                createRandomLightning();
+            }
+
+            updateWeatherButtons(activeWeather) {
+                document.querySelectorAll('.weather-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.weather === activeWeather) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+
+            setupWeatherControls() {
+                document.querySelectorAll('.weather-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const weatherType = btn.dataset.weather;
+                        this.changeWeather(weatherType);
+                    });
+                });
+            }
+        }
+
+        // Initialize Weather System
+        const weatherSystem = new WeatherSystem();
+
+        // Mobile Menu Toggle
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+        const menuIcon = mobileMenu.querySelector('i');
+
+        mobileMenu.addEventListener('click', function () {
+            navLinks.classList.toggle('active');
+            if (navLinks.classList.contains('active')) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function () {
+                navLinks.classList.remove('active');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            });
+        });
+
+        // Password Toggle Functionality
+        const passwordToggle = document.getElementById('passwordToggle');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = passwordToggle.querySelector('i');
+
+        passwordToggle.addEventListener('click', function () {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Form submission handling with validation and Firebase sign-in
+        document.querySelector('.login-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const fullname = document.getElementById('fullname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Validation
+            if (!fullname || !email || !password) {
+                this.classList.add('shake');
+                setTimeout(() => this.classList.remove('shake'), 500);
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password should be at least 6 characters long.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('loginButton');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            submitBtn.disabled = true;
+
+            try {
+                // Ensure firebaseSignIn and firebaseAuth are available
+                if (!window.firebaseSignIn || !window.firebaseAuth) {
+                    throw new Error('Firebase not initialized');
+                }
+
+                const userCredential = await window.firebaseSignIn(window.firebaseAuth, email, password);
+                const user = userCredential.user;
+
+                // Save login data to database (optional, similar helper as other pages)
+                try {
+                    const userRef = window.firebaseRef(window.firebaseDatabase, 'users/' + user.uid);
+                    const snapshot = await window.firebaseGet(userRef);
+                    const now = new Date().toISOString();
+
+                    if (snapshot && snapshot.exists && snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const updates = { lastLogin: now, loginCount: (userData.loginCount || 0) + 1 };
+                        await window.firebaseUpdate(userRef, updates);
+                    } else {
+                        const userData = { email: user.email, createdAt: now, lastLogin: now, loginCount: 1 };
+                        await window.firebaseSet(userRef, userData);
+                    }
+                } catch (dbErr) {
+                    console.warn('Could not save login data:', dbErr);
+                }
+
+                showFirebaseMessage('Welcome back, ' + (user.email || fullname) + '!', 'success');
+                // Reset form and UI
+                this.reset();
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+                passwordInput.type = 'password';
+
+                // Redirect to homepage or dashboard
+                window.location.href = './index.html';
+            } catch (error) {
+                console.error('Firebase sign-in error:', {
+                    code: error?.code,
+                    message: error?.message,
+                    stack: error?.stack || null
+                });
+
+                // Friendly UI message with diagnostic hint
+                let message = error?.message || 'Login failed.';
+                if (error?.code === 'auth/invalid-credential') {
+                    message = 'Invalid credential provided. Likely causes: incorrect API key/project config, disabled Email/Password provider, or restricted API key.';
+                }
+
+                // Show inline message and console guidance
+                const friendly = mapFirebaseErrorToMessage(error);
+                showFirebaseMessage(friendly + ` (${error?.code || 'unknown_error'})`, 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Add shake animation for form validation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .shake {
+                animation: shake 0.5s ease-in-out;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Helper to display messages in the inline firebaseMessage div
+        function showFirebaseMessage(text, type) {
+            const msg = document.getElementById('firebaseMessage');
+            if (!msg) return;
+            msg.textContent = text;
+            msg.style.display = 'block';
+            msg.classList.remove('error', 'success');
+            if (type === 'error') msg.classList.add('error');
+            if (type === 'success') msg.classList.add('success');
+            // auto-hide success messages
+            if (type === 'success') setTimeout(() => { msg.style.display = 'none'; }, 4000);
+        }
+
+        function mapFirebaseErrorToMessage(err) {
+            if (!err || !err.code) return err?.message || 'Login failed.';
+            switch (err.code) {
+                case 'auth/invalid-email': return 'Invalid email address.';
+                case 'auth/user-disabled': return 'This account has been disabled.';
+                case 'auth/user-not-found': return 'No account found with this email.';
+                case 'auth/wrong-password': return 'Incorrect password.';
+                case 'auth/invalid-credential': return 'Invalid credential provided. Check project config and API key.';
+                default: return err.message || 'Login failed.';
+            }
+        }
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function () {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(0, 0, 0, 0.3)';
+                header.style.backdropFilter = 'blur(20px)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.1)';
+                header.style.backdropFilter = 'blur(10px)';
+            }
+        });
+
+        // Add parallax effect to clouds
+        window.addEventListener('scroll', function () {
+            const scrolled = window.pageYOffset;
+            const clouds = document.querySelectorAll('.cloud');
+
+            clouds.forEach((cloud, index) => {
+                const speed = 0.5 + (index * 0.1);
+                const yPos = -(scrolled * speed);
+                cloud.style.transform = `translateY(${yPos}px)`;
+            });
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function (event) {
+            if (!navLinks.contains(event.target) && !mobileMenu.contains(event.target)) {
+                navLinks.classList.remove('active');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        });
+
+        // Forgot password handling
+        const forgotLink = document.getElementById('forgotPassword');
+        if (forgotLink) {
+            forgotLink.addEventListener('click', async function (e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value.trim();
+                if (!email) {
+                    alert('Please enter your email in the email field first');
+                    return;
+                }
+                try {
+                    if (!window.firebaseSendPasswordResetEmail || !window.firebaseAuth) throw new Error('Firebase not initialized');
+                    await window.firebaseSendPasswordResetEmail(window.firebaseAuth, email);
+                    alert('Password reset email sent. Check your inbox.');
+                } catch (err) {
+                    console.error('Password reset error:', err);
+                    alert('Failed to send reset email: ' + (err.message || err));
+                }
+            });
+        }
+
+        // Enter key to submit form
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && document.activeElement === passwordInput) {
+                document.querySelector('.login-btn').click();
+            }
+        });
+
+        // Auto-hide weather controls after inactivity
+        let hideTimeout;
+        function resetHideTimeout() {
+            clearTimeout(hideTimeout);
+            document.querySelector('.weather-control').style.opacity = '1';
+            hideTimeout = setTimeout(() => {
+                document.querySelector('.weather-control').style.opacity = '0.3';
+            }, 3000);
+        }
+
+        document.querySelector('.weather-control').addEventListener('mouseenter', () => {
+            clearTimeout(hideTimeout);
+            document.querySelector('.weather-control').style.opacity = '1';
+        });
+
+        document.querySelector('.weather-control').addEventListener('mouseleave', resetHideTimeout);
+        document.addEventListener('mousemove', resetHideTimeout);
+        resetHideTimeout();
+    </script>
 </body>
+
+
+
 </html>
